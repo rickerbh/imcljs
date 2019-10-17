@@ -145,7 +145,7 @@
   [model query]
   (let [query (sterilize-query query)]
     (reduce (fn [path-map next-path]
-              (update path-map (path/class model next-path)
+              (update path-map (path/im-class model next-path)
                       assoc (path/trim-to-last-class model next-path)
                       {:query (assoc query :select [(str (path/trim-to-last-class model next-path) ".id")])}))
             {} (:select query))))
@@ -156,10 +156,9 @@
   [model query]
   (let [query (sterilize-query query)]
     (reduce (fn [path-map next-path]
-              (update path-map (path/class model next-path)
+              (update path-map (path/im-class model next-path)
                       (comp vec set conj)
                       {:path (str (path/trim-to-last-class model next-path) ".id")
-                       :type (path/class model next-path)
+                       :type (path/im-class model next-path)
                        :query (assoc query :select [(str (path/trim-to-last-class model next-path) ".id")])}))
             {} (:select query))))
-

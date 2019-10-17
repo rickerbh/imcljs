@@ -96,7 +96,7 @@
   [model path]
   (:type (last (walk model path))))
 
-(defn class
+(defn im-class
   "Returns the class represented by the path.
   (class im-model `Gene.homologues.homologue.symbol`)
   => :Gene"
@@ -107,7 +107,7 @@
 (defn relationships
   "Returns all relationships (references and collections) for a given string path."
   [model path]
-  (apply merge (map (get-in model [:classes (class model path)]) [:references :collections])))
+  (apply merge (map (get-in model [:classes (im-class model path)]) [:references :collections])))
 
 (defn mapify [coll]
   (into {} coll))
@@ -138,9 +138,9 @@
 (defn attributes
   "Returns all attributes for a given string path."
   [model path]
-  (apply merge (map (get-in model [:classes (class model path)]) [:attributes])))
+  (apply merge (map (get-in model [:classes (im-class model path)]) [:attributes])))
 
-(defn class?
+(defn im-class?
   "Returns true if path is a class.
   (class im-model `Gene.diseases`)
   => true
@@ -163,7 +163,7 @@
   (adjust-path-to-last-class im-model `Gene.organism.name`)
   => Organism.name"
   [model path]
-  (let [attribute? (not (class? model path))
+  (let [attribute? (not (im-class? model path))
         walked     (reverse (walk model path))]
     (if attribute?
       (str (:name (nth walked 1)) "." (:name (nth walked 0)))
@@ -184,7 +184,7 @@
 (defn subclasses
   "Returns subclasses of the class"
   [model path]
-  (let [path-class (class model path)]
+  (let [path-class (im-class model path)]
     (->> model
          :classes
          (filter (fn [[_ properties]] (one-of? (:extends properties) (name path-class))))
